@@ -1,0 +1,504 @@
+/* ════════════════════════════════════════════════
+   themes.css — 10 Creative Themes (Light & Dark)
+   Applied via <html data-theme="name" data-mode="light|dark">
+   ════════════════════════════════════════════════ */
+
+/* ── Aurora Flux (Light) ── */
+[data-theme="aurora-flux"][data-mode="light"] {
+  --color-bg:              #F7FAFC;
+  --color-surface:         #FFFFFF;
+  --color-sidebar:         #EEF4FF;
+  --color-sidebar-hover:   #dbe0eb;
+  --color-sidebar-active:  #cacfd9;
+  --color-text:            #0F172A;
+  --color-text-muted:      #64748B;
+  --color-border:          #CBD5E1;
+  --color-primary:         #6366F1;
+  --color-primary-hover:   #595cd9;
+  --color-user-bubble:     #e8e8fd;
+  --color-assistant-bubble:#FFFFFF;
+  --color-accent:          #A855F7;
+  --color-danger:          #E11D48;
+  --color-success:         #10B981;
+  --color-secondary:       #06B6D4;
+  --color-warning:         #F59E0B;
+  --color-info:            #3B82F6;
+  --color-panel:           #FFFFFF;
+  --color-input:           #FFFFFF;
+  --color-muted:           #64748B;
+}
+
+/* ── Aurora Flux (Dark) ── */
+[data-theme="aurora-flux"][data-mode="dark"] {
+  --color-bg:              #0B1020;
+  --color-surface:         #151D33;
+  --color-sidebar:         #11182B;
+  --color-sidebar-hover:   #292f40;
+  --color-sidebar-active:  #414655;
+  --color-text:            #E5E7EB;
+  --color-text-muted:      #AAB6D3;
+  --color-border:          #293653;
+  --color-primary:         #818CF8;
+  --color-primary-hover:   #949df9;
+  --color-user-bubble:     #23294b;
+  --color-assistant-bubble:#151D33;
+  --color-accent:          #C084FC;
+  --color-danger:          #FB7185;
+  --color-success:         #34D399;
+  --color-secondary:       #22D3EE;
+  --color-warning:         #FBBF24;
+  --color-info:            #60A5FA;
+  --color-panel:           #151D33;
+  --color-input:           #0F172A;
+  --color-muted:           #AAB6D3;
+}
+
+/* ── Ocean Ember (Light) ── */
+[data-theme="ocean-ember"][data-mode="light"] {
+  --color-bg:              #F6FAFB;
+  --color-surface:         #FFFFFF;
+  --color-sidebar:         #E8F3F5;
+  --color-sidebar-hover:   #d5e0e1;
+  --color-sidebar-active:  #c5cfd0;
+  --color-text:            #0F172A;
+  --color-text-muted:      #5F7480;
+  --color-border:          #CFE0E5;
+  --color-primary:         #0891B2;
+  --color-primary-hover:   #0783a0;
+  --color-user-bubble:     #daeff3;
+  --color-assistant-bubble:#FFFFFF;
+  --color-accent:          #E11D48;
+  --color-danger:          #DC2626;
+  --color-success:         #10B981;
+  --color-secondary:       #F97316;
+  --color-warning:         #F59E0B;
+  --color-info:            #3B82F6;
+  --color-panel:           #FFFFFF;
+  --color-input:           #FFFFFF;
+  --color-muted:           #5F7480;
+}
+
+/* ── Ocean Ember (Dark) ── */
+[data-theme="ocean-ember"][data-mode="dark"] {
+  --color-bg:              #071316;
+  --color-surface:         #10272D;
+  --color-sidebar:         #0B1D22;
+  --color-sidebar-hover:   #233438;
+  --color-sidebar-active:  #3c4a4e;
+  --color-text:            #E6F6FA;
+  --color-text-muted:      #9FC3CD;
+  --color-border:          #21444D;
+  --color-primary:         #22D3EE;
+  --color-primary-hover:   #43daf1;
+  --color-user-bubble:     #0c3941;
+  --color-assistant-bubble:#10272D;
+  --color-accent:          #FB7185;
+  --color-danger:          #F87171;
+  --color-success:         #34D399;
+  --color-secondary:       #FB923C;
+  --color-warning:         #FBBF24;
+  --color-info:            #60A5FA;
+  --color-panel:           #10272D;
+  --color-input:           #09191D;
+  --color-muted:           #9FC3CD;
+}
+
+/* ── Graphite Candy (Light) ── */
+[data-theme="graphite-candy"][data-mode="light"] {
+  --color-bg:              #F8FAFC;
+  --color-surface:         #FFFFFF;
+  --color-sidebar:         #E5E7EB;
+  --color-sidebar-hover:   #d3d5d8;
+  --color-sidebar-active:  #c3c4c8;
+  --color-text:            #111827;
+  --color-text-muted:      #6B7280;
+  --color-border:          #D1D5DB;
+  --color-primary:         #2563EB;
+  --color-primary-hover:   #2159d4;
+  --color-user-bubble:     #dee8fc;
+  --color-assistant-bubble:#FFFFFF;
+  --color-accent:          #F59E0B;
+  --color-danger:          #DC2626;
+  --color-success:         #10B981;
+  --color-secondary:       #F43F5E;
+  --color-warning:         #FBBF24;
+  --color-info:            #0284C7;
+  --color-panel:           #FFFFFF;
+  --color-input:           #FFFFFF;
+  --color-muted:           #6B7280;
+}
+
+/* ── Graphite Candy (Dark) ── */
+[data-theme="graphite-candy"][data-mode="dark"] {
+  --color-bg:              #0A0A0B;
+  --color-surface:         #222222;
+  --color-sidebar:         #171717;
+  --color-sidebar-hover:   #2e2e2e;
+  --color-sidebar-active:  #454545;
+  --color-text:            #F5F5F5;
+  --color-text-muted:      #B8B8B8;
+  --color-border:          #3A3A3A;
+  --color-primary:         #60A5FA;
+  --color-primary-hover:   #78b3fb;
+  --color-user-bubble:     #1b293b;
+  --color-assistant-bubble:#222222;
+  --color-accent:          #FBBF24;
+  --color-danger:          #F87171;
+  --color-success:         #34D399;
+  --color-secondary:       #FB7185;
+  --color-warning:         #FACC15;
+  --color-info:            #7DD3FC;
+  --color-panel:           #222222;
+  --color-input:           #111111;
+  --color-muted:           #B8B8B8;
+}
+
+/* ── Mint Galaxy (Light) ── */
+[data-theme="mint-galaxy"][data-mode="light"] {
+  --color-bg:              #F0FDFA;
+  --color-surface:         #FFFFFF;
+  --color-sidebar:         #CCFBF1;
+  --color-sidebar-hover:   #bce7de;
+  --color-sidebar-active:  #add5cd;
+  --color-text:            #0F172A;
+  --color-text-muted:      #54746E;
+  --color-border:          #B7E4DC;
+  --color-primary:         #0D9488;
+  --color-primary-hover:   #0c857a;
+  --color-user-bubble:     #dbefed;
+  --color-assistant-bubble:#FFFFFF;
+  --color-accent:          #F472B6;
+  --color-danger:          #E11D48;
+  --color-success:         #22C55E;
+  --color-secondary:       #6366F1;
+  --color-warning:         #F59E0B;
+  --color-info:            #2563EB;
+  --color-panel:           #FFFFFF;
+  --color-input:           #FFFFFF;
+  --color-muted:           #54746E;
+}
+
+/* ── Mint Galaxy (Dark) ── */
+[data-theme="mint-galaxy"][data-mode="dark"] {
+  --color-bg:              #061A17;
+  --color-surface:         #103B35;
+  --color-sidebar:         #0B2A25;
+  --color-sidebar-hover:   #233f3b;
+  --color-sidebar-active:  #3c5551;
+  --color-text:            #ECFEFF;
+  --color-text-muted:      #A7D8D0;
+  --color-border:          #245C52;
+  --color-primary:         #2DD4BF;
+  --color-primary-hover:   #4ddac9;
+  --color-user-bubble:     #0e3f39;
+  --color-assistant-bubble:#103B35;
+  --color-accent:          #F9A8D4;
+  --color-danger:          #FB7185;
+  --color-success:         #4ADE80;
+  --color-secondary:       #818CF8;
+  --color-warning:         #FBBF24;
+  --color-info:            #60A5FA;
+  --color-panel:           #103B35;
+  --color-input:           #081F1C;
+  --color-muted:           #A7D8D0;
+}
+
+/* ── Sakura Tech (Light) ── */
+[data-theme="sakura-tech"][data-mode="light"] {
+  --color-bg:              #FFF7FB;
+  --color-surface:         #FFFFFF;
+  --color-sidebar:         #FCE7F3;
+  --color-sidebar-hover:   #e8d5e0;
+  --color-sidebar-active:  #d6c4cf;
+  --color-text:            #1E1B2E;
+  --color-text-muted:      #766A88;
+  --color-border:          #E9CFE2;
+  --color-primary:         #EC4899;
+  --color-primary-hover:   #d4418a;
+  --color-user-bubble:     #fce4f0;
+  --color-assistant-bubble:#FFFFFF;
+  --color-accent:          #38BDF8;
+  --color-danger:          #E11D48;
+  --color-success:         #22C55E;
+  --color-secondary:       #8B5CF6;
+  --color-warning:         #F59E0B;
+  --color-info:            #0284C7;
+  --color-panel:           #FFFFFF;
+  --color-input:           #FFFFFF;
+  --color-muted:           #766A88;
+}
+
+/* ── Sakura Tech (Dark) ── */
+[data-theme="sakura-tech"][data-mode="dark"] {
+  --color-bg:              #17111C;
+  --color-surface:         #261A2F;
+  --color-sidebar:         #211628;
+  --color-sidebar-hover:   #372d3e;
+  --color-sidebar-active:  #4d4553;
+  --color-text:            #F8EFFF;
+  --color-text-muted:      #C8B5D6;
+  --color-border:          #44304F;
+  --color-primary:         #F472B6;
+  --color-primary-hover:   #f687c1;
+  --color-user-bubble:     #43243b;
+  --color-assistant-bubble:#261A2F;
+  --color-accent:          #7DD3FC;
+  --color-danger:          #FB7185;
+  --color-success:         #4ADE80;
+  --color-secondary:       #A78BFA;
+  --color-warning:         #FBBF24;
+  --color-info:            #7DD3FC;
+  --color-panel:           #261A2F;
+  --color-input:           #1B1322;
+  --color-muted:           #C8B5D6;
+}
+
+/* ── Citrus Garden (Light) ── */
+[data-theme="citrus-garden"][data-mode="light"] {
+  --color-bg:              #FFFDF7;
+  --color-surface:         #FFFFFF;
+  --color-sidebar:         #F4F8E8;
+  --color-sidebar-hover:   #e0e4d5;
+  --color-sidebar-active:  #cfd3c5;
+  --color-text:            #1F2937;
+  --color-text-muted:      #6B7280;
+  --color-border:          #DCE6C8;
+  --color-primary:         #F97316;
+  --color-primary-hover:   #e06814;
+  --color-user-bubble:     #feeadc;
+  --color-assistant-bubble:#FFFFFF;
+  --color-accent:          #14B8A6;
+  --color-danger:          #EF4444;
+  --color-success:         #22C55E;
+  --color-secondary:       #84CC16;
+  --color-warning:         #EAB308;
+  --color-info:            #2563EB;
+  --color-panel:           #FFFFFF;
+  --color-input:           #FFFFFF;
+  --color-muted:           #6B7280;
+}
+
+/* ── Citrus Garden (Dark) ── */
+[data-theme="citrus-garden"][data-mode="dark"] {
+  --color-bg:              #11130D;
+  --color-surface:         #202616;
+  --color-sidebar:         #1A2012;
+  --color-sidebar-hover:   #31362a;
+  --color-sidebar-active:  #484d41;
+  --color-text:            #F3F4F6;
+  --color-text-muted:      #B6C29E;
+  --color-border:          #384628;
+  --color-primary:         #FB923C;
+  --color-primary-hover:   #fca259;
+  --color-user-bubble:     #402c16;
+  --color-assistant-bubble:#202616;
+  --color-accent:          #2DD4BF;
+  --color-danger:          #F87171;
+  --color-success:         #4ADE80;
+  --color-secondary:       #A3E635;
+  --color-warning:         #FACC15;
+  --color-info:            #60A5FA;
+  --color-panel:           #202616;
+  --color-input:           #14180F;
+  --color-muted:           #B6C29E;
+}
+
+/* ── Lavender Forest (Light) ── */
+[data-theme="lavender-forest"][data-mode="light"] {
+  --color-bg:              #FAF7FF;
+  --color-surface:         #FFFFFF;
+  --color-sidebar:         #EDE9FE;
+  --color-sidebar-hover:   #dad6ea;
+  --color-sidebar-active:  #c9c6d8;
+  --color-text:            #1E1B2E;
+  --color-text-muted:      #6F6685;
+  --color-border:          #DDD6FE;
+  --color-primary:         #7C3AED;
+  --color-primary-hover:   #7034d5;
+  --color-user-bubble:     #ebe1fc;
+  --color-assistant-bubble:#FFFFFF;
+  --color-accent:          #06B6D4;
+  --color-danger:          #DC2626;
+  --color-success:         #22C55E;
+  --color-secondary:       #16A34A;
+  --color-warning:         #CA8A04;
+  --color-info:            #2563EB;
+  --color-panel:           #FFFFFF;
+  --color-input:           #FFFFFF;
+  --color-muted:           #6F6685;
+}
+
+/* ── Lavender Forest (Dark) ── */
+[data-theme="lavender-forest"][data-mode="dark"] {
+  --color-bg:              #121018;
+  --color-surface:         #282136;
+  --color-sidebar:         #1D1828;
+  --color-sidebar-hover:   #342f3e;
+  --color-sidebar-active:  #4a4653;
+  --color-text:            #F5F3FF;
+  --color-text-muted:      #BDB2D8;
+  --color-border:          #443858;
+  --color-primary:         #A78BFA;
+  --color-primary-hover:   #b49cfb;
+  --color-user-bubble:     #302945;
+  --color-assistant-bubble:#282136;
+  --color-accent:          #67E8F9;
+  --color-danger:          #F87171;
+  --color-success:         #4ADE80;
+  --color-secondary:       #4ADE80;
+  --color-warning:         #FACC15;
+  --color-info:            #60A5FA;
+  --color-panel:           #282136;
+  --color-input:           #181321;
+  --color-muted:           #BDB2D8;
+}
+
+/* ── Neon Noir (Light) ── */
+[data-theme="neon-noir"][data-mode="light"] {
+  --color-bg:              #FAFAFF;
+  --color-surface:         #FFFFFF;
+  --color-sidebar:         #F0F0FF;
+  --color-sidebar-hover:   #ddddeb;
+  --color-sidebar-active:  #ccccd9;
+  --color-text:            #18181B;
+  --color-text-muted:      #69687A;
+  --color-border:          #D8D6F2;
+  --color-primary:         #7C3AED;
+  --color-primary-hover:   #7034d5;
+  --color-user-bubble:     #ebe1fc;
+  --color-assistant-bubble:#FFFFFF;
+  --color-accent:          #FF2D95;
+  --color-danger:          #E11D48;
+  --color-success:         #00A846;
+  --color-secondary:       #00BFE6;
+  --color-warning:         #F59E0B;
+  --color-info:            #2563EB;
+  --color-panel:           #FFFFFF;
+  --color-input:           #FFFFFF;
+  --color-muted:           #69687A;
+}
+
+/* ── Neon Noir (Dark) ── */
+[data-theme="neon-noir"][data-mode="dark"] {
+  --color-bg:              #09090F;
+  --color-surface:         #181826;
+  --color-sidebar:         #11111C;
+  --color-sidebar-hover:   #292933;
+  --color-sidebar-active:  #414149;
+  --color-text:            #F4F4F5;
+  --color-text-muted:      #AAA8C2;
+  --color-border:          #30304A;
+  --color-primary:         #A78BFA;
+  --color-primary-hover:   #b49cfb;
+  --color-user-bubble:     #29233e;
+  --color-assistant-bubble:#181826;
+  --color-accent:          #F472B6;
+  --color-danger:          #FB7185;
+  --color-success:         #4ADE80;
+  --color-secondary:       #22D3EE;
+  --color-warning:         #FBBF24;
+  --color-info:            #60A5FA;
+  --color-panel:           #181826;
+  --color-input:           #0E0E17;
+  --color-muted:           #AAA8C2;
+}
+
+/* ── Solar Mirage (Light) ── */
+[data-theme="solar-mirage"][data-mode="light"] {
+  --color-bg:              #FFFBEB;
+  --color-surface:         #FFFFFF;
+  --color-sidebar:         #FEF3C7;
+  --color-sidebar-hover:   #eae0b7;
+  --color-sidebar-active:  #d8cfa9;
+  --color-text:            #1F2937;
+  --color-text-muted:      #715F3A;
+  --color-border:          #EAD9A6;
+  --color-primary:         #D97706;
+  --color-primary-hover:   #c36b05;
+  --color-user-bubble:     #f9ebda;
+  --color-assistant-bubble:#FFFFFF;
+  --color-accent:          #8B5CF6;
+  --color-danger:          #DC2626;
+  --color-success:         #16A34A;
+  --color-secondary:       #EF4444;
+  --color-warning:         #F59E0B;
+  --color-info:            #2563EB;
+  --color-panel:           #FFFFFF;
+  --color-input:           #FFFFFF;
+  --color-muted:           #715F3A;
+}
+
+/* ── Solar Mirage (Dark) ── */
+[data-theme="solar-mirage"][data-mode="dark"] {
+  --color-bg:              #17120A;
+  --color-surface:         #2A2112;
+  --color-sidebar:         #241A0C;
+  --color-sidebar-hover:   #3a3124;
+  --color-sidebar-active:  #50483d;
+  --color-text:            #FEF3C7;
+  --color-text-muted:      #D6BE8D;
+  --color-border:          #4A3518;
+  --color-primary:         #F59E0B;
+  --color-primary-hover:   #f7ad30;
+  --color-user-bubble:     #432e0a;
+  --color-assistant-bubble:#2A2112;
+  --color-accent:          #A78BFA;
+  --color-danger:          #F87171;
+  --color-success:         #4ADE80;
+  --color-secondary:       #F87171;
+  --color-warning:         #FBBF24;
+  --color-info:            #60A5FA;
+  --color-panel:           #2A2112;
+  --color-input:           #1B150C;
+  --color-muted:           #D6BE8D;
+}
+
+/* ── Retro Arcade (Light) ── */
+[data-theme="retro-arcade"][data-mode="light"] {
+  --color-bg:              #FFF7ED;
+  --color-surface:         #FFFFFF;
+  --color-sidebar:         #FFE4C7;
+  --color-sidebar-hover:   #ebd2b7;
+  --color-sidebar-active:  #d9c2a9;
+  --color-text:            #1F2937;
+  --color-text-muted:      #7C6250;
+  --color-border:          #F2C9A5;
+  --color-primary:         #DB2777;
+  --color-primary-hover:   #c5236b;
+  --color-user-bubble:     #fadfeb;
+  --color-assistant-bubble:#FFFFFF;
+  --color-accent:          #22C55E;
+  --color-danger:          #DC2626;
+  --color-success:         #16A34A;
+  --color-secondary:       #F97316;
+  --color-warning:         #F59E0B;
+  --color-info:            #2563EB;
+  --color-panel:           #FFFFFF;
+  --color-input:           #FFFFFF;
+  --color-muted:           #7C6250;
+}
+
+/* ── Retro Arcade (Dark) ── */
+[data-theme="retro-arcade"][data-mode="dark"] {
+  --color-bg:              #100B1A;
+  --color-surface:         #24183F;
+  --color-sidebar:         #1B1230;
+  --color-sidebar-hover:   #322a45;
+  --color-sidebar-active:  #494159;
+  --color-text:            #FFF7ED;
+  --color-text-muted:      #CDBBE8;
+  --color-border:          #3D2B63;
+  --color-primary:         #F472B6;
+  --color-primary-hover:   #f687c1;
+  --color-user-bubble:     #3e2039;
+  --color-assistant-bubble:#24183F;
+  --color-accent:          #86EFAC;
+  --color-danger:          #F87171;
+  --color-success:         #4ADE80;
+  --color-secondary:       #FB923C;
+  --color-warning:         #FBBF24;
+  --color-info:            #60A5FA;
+  --color-panel:           #24183F;
+  --color-input:           #171026;
+  --color-muted:           #CDBBE8;
+}

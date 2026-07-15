@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Chai — A minimalist chat UI for LLMs">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: http:; font-src 'self'; connect-src *; object-src 'none'; base-uri 'self'; form-action 'none';">
+  <title>aiCh@t</title>
+  <script src="js/theme-boot.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="vendor/highlightjs/github-dark.min.css">
+
+  <!-- Libraries (CDN) -->
+  <script src="vendor/idb-keyval/umd.js"></script>
+  <script src="vendor/marked/marked.min.js"></script>
+  <script src="vendor/dompurify/purify.min.js"></script>
+  <script src="vendor/highlightjs/highlight.min.js"></script>
+  <script src="vendor/mermaid/mermaid.min.js"></script>
+  <script src="vendor/chartjs/chart.umd.min.js"></script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <div id="app">
+    <!-- ═══ Sidebar ═══ -->
+    <aside id="sidebar" role="navigation" aria-label="Chat history">
+      <div id="sidebar-header">
+        <h1>aiCh@t</h1>
+        <div style="display:flex;gap:4px;align-items:center;">
+          <select id="sort-select" aria-label="Sort chats" title="Sort" style="font-size:0.7rem;padding:2px 4px;border:1px solid var(--color-border);border-radius:4px;background:var(--color-surface);color:var(--color-text);">
+            <option value="updatedAt-desc">Newest</option>
+            <option value="updatedAt-asc">Oldest</option>
+            <option value="title-asc">A-Z</option>
+            <option value="title-desc">Z-A</option>
+          </select>
+        </div>
+      </div>
+      <div id="sidebar-search">
+        <input type="text" placeholder="Search conversations…" aria-label="Search conversations" disabled>
+      </div>
+      <div id="chat-list" role="list" aria-label="Conversation list">
+        <!-- Rendered by JS -->
+      </div>
+    </aside>
+
+    <!-- ═══ Main Area ═══ -->
+    <main id="main">
+      <!-- Header -->
+      <header id="main-header">
+        <div class="header-left">
+          <span id="sidebar-title-collapsed" class="sidebar-title-collapsed hidden" title="Click to refresh">aiCh@t</span>
+          <button id="sidebar-toggle" class="header-btn" aria-label="Toggle sidebar">☰</button>
+          <span id="model-badge" class="model-badge">No model</span>
+          <span id="context-tokens" class="context-tokens"></span>
+          <span id="usage-stats" class="usage-stats" title="Total usage"></span>
+        </div>
+        <div class="header-right">
+          <button id="new-chat-btn" class="header-btn" aria-label="New conversation" title="New Chat">+ New Chat</button>
+          <button id="search-sidebar-btn" class="header-btn" aria-label="Search conversations" title="Search conversations (Ctrl+Shift+F)">🔍</button>
+          <button id="copy-chat-btn" class="header-btn" aria-label="Copy conversation" title="Copy conversation">📋</button>
+          <button id="clear-btn" class="header-btn" aria-label="Clear conversation" title="Clear messages">🗑️</button>
+          <button id="right-sidebar-toggle" class="header-btn" aria-label="Settings" title="Settings">⚙️</button>
+        </div>
+      </header>
+
+      <!-- In-chat Search Bar (hidden by default) -->
+      <div id="chat-search-bar" class="chat-search-bar hidden">
+        <input type="text" id="chat-search-input" placeholder="Search in chat… (Press Enter to navigate)" aria-label="Search in current conversation">
+        <span id="chat-search-count" class="chat-search-count">0/0</span>
+        <button id="chat-search-prev" class="search-nav-btn" title="Previous match">▲</button>
+        <button id="chat-search-next" class="search-nav-btn" title="Next match">▼</button>
+        <button id="chat-search-close" class="search-nav-btn" title="Close search">✕</button>
+      </div>
+
+      <!-- Messages -->
+      <div id="chat-messages" role="log" aria-label="Chat messages" aria-live="polite">
+        <div class="loading-spinner" aria-label="Loading">Loading…</div>
+      </div>
+      <button id="scroll-bottom-btn" class="scroll-bottom-btn" aria-label="Scroll to bottom" title="Scroll to latest message">↓</button>
+
+      <!-- Input Area -->
+      <div id="input-area">
+        <div id="input-row">
+          <textarea
+            id="message-input"
+            rows="1"
+            placeholder="Type a message… (Shift+Enter for new line)"
+            aria-label="Message input"
+          ></textarea>
+          <button id="send-btn" aria-label="Send message">
+            <span>Send</span> ➤
+          </button>
+        </div>
+        <div id="input-stats">
+          <span class="token-count" id="token-estimate">~0 tokens</span>
+          <span id="char-count">0 chars</span>
+          <span id="word-count">0 words</span>
+          <label class="thinking-toggle-label" for="center-thinking-toggle" title="Enable a concise reasoning summary when useful">
+            <input type="checkbox" id="center-thinking-toggle">
+            <span>🧠 Think</span>
+          </label>
+        </div>
+      </div>
+      <!-- Footer -->
+      <footer style="text-align:center;font-size:0.75rem;color:var(--color-text-muted);padding:8px 0;border-top:1px solid var(--color-border);margin-top:auto;">
+        aiCh@t made with <span class="footer-heart" aria-label="love"></span> by Pranav Yaddanapudi
+      </footer>
+    </main>
+
+    <!-- ═══ Right Sidebar ═══ -->
+    <aside id="right-sidebar" role="complementary" aria-label="Chat settings and controls">
+      <div id="right-sidebar-header">
+        <h3>Chat Settings</h3>
+        <button id="right-sidebar-close" class="header-btn" aria-label="Close settings panel">&times;</button>
+      </div>
+      <div id="right-sidebar-body">
+        <!-- System Prompt -->
+        <div class="rs-section">
+          <label for="rs-system-prompt">System Prompt</label>
+          <textarea id="rs-system-prompt" rows="4" placeholder="You are a helpful assistant…"></textarea>
+        </div>
+
+        <!-- Persona Selector -->
+        <div class="rs-section">
+          <label for="rs-role-select">Persona</label>
+          <div class="role-select-row">
+            <select id="rs-role-select" class="rs-theme-select" aria-label="Select a persona">
+              <option value="">— No persona —</option>
+            </select>
+            <button id="rs-role-manager-btn" class="btn btn-secondary" type="button" style="white-space:nowrap;font-size:0.72rem;padding:4px 8px;" title="Manage personas">Manage</button>
+          </div>
+        </div>
+
+        <!-- Theme Selector -->
+        <div class="rs-section">
+          <label>Theme</label>
+          <div class="theme-selector-row">
+            <select id="rs-theme-select" class="rs-theme-select" aria-label="Select theme"></select>
+            <button id="rs-mode-toggle" class="mode-toggle-btn" title="Toggle light/dark mode">☀️</button>
+          </div>
+        </div>
+
+        <!-- Provider Profiles -->
+        <div class="rs-section">
+          <label>Provider</label>
+          <div class="role-select-row">
+            <select id="rs-profile-select" class="rs-theme-select" aria-label="Select provider profile"></select>
+            <button id="rs-profile-manage-btn" class="btn btn-secondary" type="button" style="white-space:nowrap;font-size:0.72rem;padding:4px 8px;" title="Manage provider profiles">Manage</button>
+          </div>
+        </div>
+        <!-- Model Selector -->
+        <div class="rs-section">
+          <label>Model</label>
+          <div class="role-select-row">
+            <div class="model-filter-wrap">
+              <input type="text" id="rs-model-filter" class="rs-theme-select" placeholder="Search or select model…" autocomplete="off" aria-label="Select model">
+              <div id="rs-model-dropdown" class="model-dropdown hidden"></div>
+            </div>
+            <button id="rs-fetch-models-btn" class="btn btn-secondary" type="button" style="white-space:nowrap;font-size:0.72rem;padding:6px 10px;" title="Fetch available models from endpoint">↻ Fetch</button>
+          </div>
+        </div>
+
+        <!-- Export / Import Manager (collapsed by default) -->
+        <details class="rs-advanced" id="rs-export-section">
+          <summary id="rs-export-summary">📦 Export / Import</summary>
+          <div class="rs-advanced-body">
+            <div class="rs-section">
+              <label>Current Chat</label>
+              <div style="display:flex;gap:4px;">
+                <button id="rs-export-json-btn" class="btn btn-secondary" style="flex:1;font-size:0.72rem;padding:5px 4px;">📄 JSON</button>
+                <button id="rs-export-html-btn" class="btn btn-secondary" style="flex:1;font-size:0.72rem;padding:5px 4px;">🌐 HTML</button>
+                <button id="rs-export-md-btn" class="btn btn-secondary" style="flex:1;font-size:0.72rem;padding:5px 4px;">📝 MD</button>
+              </div>
+            </div>
+            <div class="rs-section">
+              <label>All Data</label>
+              <div style="display:flex;gap:4px;">
+                <button id="rs-backup-btn" class="btn btn-secondary" style="flex:1;font-size:0.72rem;padding:5px 4px;">💾 Backup All</button>
+                <button id="rs-restore-btn" class="btn btn-secondary" style="flex:1;font-size:0.72rem;padding:5px 4px;">📂 Restore</button>
+              </div>
+            </div>
+            <div class="rs-section">
+              <label>Import Chat</label>
+              <button id="rs-import-chat-btn" class="btn btn-secondary" style="width:100%;font-size:0.72rem;padding:5px 8px;">📂 Import Chat JSON</button>
+            </div>
+          </div>
+        </details>
+
+        <!-- Advanced Settings (collapsed by default) -->
+        <details class="rs-advanced" id="rs-advanced">
+          <summary id="rs-advanced-summary">⚙ Advanced Settings</summary>
+          <div class="rs-advanced-body">
+            <!-- Temperature -->
+            <div class="rs-section">
+              <label>Temperature <span id="rs-temp-value">0.7</span></label>
+              <input type="range" id="rs-temperature" min="0" max="2" step="0.05" value="0.7">
+              <div class="rs-range-labels"><span>0</span><span>2</span></div>
+            </div>
+
+            <!-- Max Tokens -->
+            <div class="rs-section">
+              <label>Max Tokens</label>
+              <input type="number" id="rs-max-tokens" value="8192" min="1" max="131072" step="1">
+            </div>
+
+            <!-- Reasoning Effort -->
+            <div class="rs-section">
+              <label for="rs-reasoning-effort">Reasoning Effort</label>
+              <select id="rs-reasoning-effort" class="rs-theme-select" aria-label="Reasoning effort">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+        </details>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/modals.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

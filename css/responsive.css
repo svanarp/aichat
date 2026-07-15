@@ -1,0 +1,181 @@
+/* ════════════════════════════════════════════════
+   responsive.css — Mobile & Tablet Breakpoints
+   ════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  #app {
+    flex-direction: column;
+  }
+
+  #sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    width: 85vw;
+    max-width: 320px;
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+    box-shadow: var(--shadow-lg);
+  }
+  #sidebar.open {
+    transform: translateX(0);
+  }
+
+  #sidebar-toggle {
+    display: flex !important;
+  }
+
+  #chat-messages {
+    padding: 12px 14px;
+  }
+
+  .message {
+    max-width: 92%;
+  }
+
+  #main-header {
+    padding: 0 12px;
+  }
+
+  #input-area {
+    padding: 8px 12px 12px;
+  }
+
+  #right-sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 100;
+    width: 85vw;
+    max-width: 320px;
+    transform: translateX(100%);
+    height: 100vh;
+    box-shadow: var(--shadow-lg);
+    transition: transform 200ms ease;
+  }
+  #right-sidebar.open {
+    transform: translateX(0);
+  }
+  #right-sidebar.collapsed {
+    margin-right: 0;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(100%);
+  }
+  #right-sidebar.collapsed.open {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+
+  #main-header .header-left .model-badge {
+    max-width: 120px;
+  }
+
+  #send-btn span {
+    display: none;
+  }
+}
+
+/* ── Tablet breakpoint ── */
+@media (max-width: 1024px) and (min-width: 769px) {
+  #sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+    box-shadow: var(--shadow-lg);
+  }
+  #sidebar.open {
+    transform: translateX(0);
+  }
+  #sidebar.collapsed {
+    width: 280px;
+    min-width: 280px;
+    padding: 0;
+    overflow: hidden;
+    border-right: none;
+    transform: translateX(-100%);
+  }
+  #sidebar.collapsed.open {
+    transform: translateX(0);
+  }
+
+  #sidebar-toggle {
+    display: flex !important;
+  }
+
+  #right-sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 100;
+    width: 320px;
+    transform: translateX(100%);
+    height: 100vh;
+    box-shadow: var(--shadow-lg);
+    transition: transform 200ms ease;
+    margin-right: 0;
+    opacity: 1;
+  }
+  #right-sidebar.open {
+    transform: translateX(0);
+  }
+  #right-sidebar.collapsed {
+    margin-right: 0;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(100%);
+  }
+  #right-sidebar.collapsed.open {
+    transform: translateX(0);
+  }
+}
+
+/* ── Touch devices: always show hover-only UI ── */
+@media (hover: none) and (pointer: coarse) {
+  .message-actions {
+    opacity: 1;
+  }
+  .chat-delete-btn {
+    opacity: 1;
+  }
+  .chat-folder-rename-btn,
+  .chat-folder-delete-btn {
+    opacity: 1;
+  }
+  .code-copy-btn {
+    opacity: 1;
+  }
+  .code-lang-selector {
+    opacity: 1;
+  }
+  .header-btn {
+    padding: 8px 12px;
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+  #sidebar-toggle,
+  #right-sidebar-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .chat-list-item {
+    padding: 12px 12px;
+  }
+  .chat-list-item .chat-title {
+    font-size: 1rem;
+  }
+  #message-input {
+    font-size: 16px;
+  }
+}
