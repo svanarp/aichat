@@ -184,5 +184,3 @@ API keys are encrypted at rest using AES-GCM and stored in the browser's localSt
 ---
 
 Enjoy chatting with your AI models! If you have any questions or suggestions, feel free to notify author for consideration.
-
-*aiCh@t made with ❤️ by Pranav Yaddanapudi*
