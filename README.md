@@ -68,7 +68,7 @@ Open your browser and navigate to `http://localhost:8000`. The app will load and
 |---|---|
 | `Enter` | Send message |
 | `Shift+Enter` | New line in input |
-| `Ctrl/Cmd+N` | New chat |
+| `Ctrl/Cmd+/` | New chat |
 | `Ctrl/Cmd+,` | Open provider config |
 | `Ctrl/Cmd+F` | Search in current chat |
 | `Ctrl/Cmd+Shift+F` | Focus sidebar search |
@@ -184,3 +184,5 @@ API keys are encrypted at rest using AES-GCM and stored in the browser's localSt
 ---
 
 Enjoy chatting with your AI models! If you have any questions or suggestions, feel free to notify author for consideration.
+
+*aiCh@t made with ❤️ by Pranav Yaddanapudi*
