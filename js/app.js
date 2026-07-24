@@ -8,6 +8,7 @@ const App = (() => {
   /* ── State ── */
   let currentChatId = null;
   let currentSort = 'updatedAt-desc';
+  let _newChatHandled = false;
   const LEGACY_DRAFT_KEY = 'chai-draft';
 
   /* ── Initialize ── */
@@ -469,12 +470,19 @@ const App = (() => {
     });
 
     // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-      // Ctrl+N or Cmd+N: new chat
-      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+    function newChatShortcut(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === '/' && !e.shiftKey && !e.altKey) {
         e.preventDefault();
-        document.getElementById('new-chat-btn').click();
+        if (_newChatHandled) return;
+        _newChatHandled = true;
+        setTimeout(() => { _newChatHandled = false; }, 300);
+        saveDraft();
+        startNewChat();
       }
+    }
+    window.addEventListener('keydown', (e) => {
+      // Ctrl+/ or Cmd+/: new chat (both keydown and keyup)
+      newChatShortcut(e);
       // Ctrl+, or Cmd+, : open config
       if ((e.ctrlKey || e.metaKey) && e.key === ',') {
         e.preventDefault();
@@ -522,6 +530,9 @@ const App = (() => {
         }
       }
     });
+
+    // Keyup fallback for new chat shortcut (catches cases where keydown is consumed)
+    window.addEventListener('keyup', newChatShortcut);
 
     // Handle draft auto-save on page unload
     window.addEventListener('beforeunload', () => {
