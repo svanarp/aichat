@@ -424,12 +424,20 @@ classical arguments to illuminate complex questions.` }
       modelDropdown.classList.remove('hidden');
     }
 
+    const clearBtn = document.getElementById('rs-model-clear-btn');
+
+    function toggleClearBtn() {
+      if (!clearBtn) return;
+      clearBtn.classList.toggle('visible', !!modelFilter.value);
+    }
+
     function selectModel(model) {
       if (!model) return;
       modelFilter.value = model;
       ChatManager.setChatModel(model);
       UI.renderHeader(model);
       modelDropdown.classList.add('hidden');
+      toggleClearBtn();
     }
 
     if (profileSelect) {
@@ -437,11 +445,12 @@ classical arguments to illuminate complex questions.` }
         const profileId = profileSelect.value;
         if (profileId) {
           Store.setActiveProfileId(profileId);
-          const profile = Store.getActiveProfile();
-          if (profile) {
-            ChatManager.setChatModel(profile.model || '');
-            UI.renderHeader(profile.model || '');
-          }
+          ChatManager.setChatModel('');
+          UI.renderHeader('');
+          modelFilter.value = '';
+          modelList = [];
+          modelDropdown.classList.add('hidden');
+          toggleClearBtn();
         }
       });
     }
@@ -462,15 +471,10 @@ classical arguments to illuminate complex questions.` }
         try {
           const models = await Api.fetchModels({ endpoint: profile.endpoint, apiKey: profile.apiKey });
           modelList = models.sort((a, b) => a.localeCompare(b));
-          const chat = ChatManager.getCurrentChat();
-          const currentModel = chat ? chat.model : '';
-          if (currentModel && modelList.includes(currentModel)) {
-            modelFilter.value = currentModel;
-          } else if (modelList.length > 0) {
-            modelFilter.value = modelList[0];
-            ChatManager.setChatModel(modelList[0]);
-          }
-          UI.renderHeader(modelFilter.value || profile.model);
+          modelFilter.value = '';
+          ChatManager.setChatModel('');
+          UI.renderHeader('');
+          toggleClearBtn();
           renderDropdown('');
           showToast(`Loaded ${modelList.length} models`, 'success');
         } catch (err) {
@@ -485,6 +489,7 @@ classical arguments to illuminate complex questions.` }
 
       modelFilter.addEventListener('input', () => {
         renderDropdown(modelFilter.value);
+        toggleClearBtn();
       });
 
       modelFilter.addEventListener('keydown', (e) => {
@@ -533,10 +538,18 @@ classical arguments to illuminate complex questions.` }
         }
       });
 
-      const profile = Store.getActiveProfile();
-      if (profile && profile.model) {
-        UI.renderHeader(profile.model);
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          modelFilter.value = '';
+          ChatManager.setChatModel('');
+          UI.renderHeader('');
+          modelDropdown.classList.add('hidden');
+          toggleClearBtn();
+          modelFilter.focus();
+        });
       }
+
+      toggleClearBtn();
     }
 
     document.getElementById('rs-export-json-btn').addEventListener('click', () => {

@@ -66,7 +66,7 @@
 
     return `
       <div class="message ${msg.role}${isPinned ? ' pinned' : ''}" data-msg-id="${msg.id}">
-        <div class="message-bubble">${reasoningHtml}${renderedContent || '<em>…</em>'}</div>
+        <div class="message-bubble">${reasoningHtml}${renderedContent || '<span class="typing-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>'}</div>
         <div class="message-meta">
           <span class="message-role-badge">${isUser ? 'You' : 'AI'}</span>
           <span class="message-time" title="${Utils.formatFullTime(msg.timestamp)}">${time}</span>
@@ -455,7 +455,7 @@
         contentHtml = Utils.escapeHtml(content);
       }
     } else if (!reasoning) {
-      contentHtml = '<em>…</em>';
+      contentHtml = '<span class="typing-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
     }
 
     bubble.innerHTML = reasoningHtml + contentHtml;
@@ -559,8 +559,12 @@
 
     // Sync model filter to current chat's model
     const modelFilter = document.getElementById('rs-model-filter');
-    if (modelFilter && chat?.model) {
-      modelFilter.value = chat.model;
+    if (modelFilter) {
+      modelFilter.value = chat?.model || '';
+      const clearBtn = document.getElementById('rs-model-clear-btn');
+      if (clearBtn) {
+        clearBtn.classList.toggle('visible', !!modelFilter.value);
+      }
     }
 
     const roles = UI.getAllRoles();

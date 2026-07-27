@@ -157,11 +157,10 @@
       if (!pid) return;
       e.stopPropagation();
       Store.setActiveProfileId(pid);
-      const profile = Store.getActiveProfile();
-      const model = profile ? (profile.model || '') : '';
-      ChatManager.setChatModel(model);
-      UI.renderHeader(model);
-      UI.showToast('Profile activated: ' + (profile ? profile.name : ''), 'success');
+      const activeProfile = Store.getActiveProfile();
+      ChatManager.setChatModel('');
+      UI.renderHeader('');
+      UI.showToast('Profile activated: ' + (activeProfile ? activeProfile.name : ''), 'success');
       refreshProfileList(overlay);
     });
 

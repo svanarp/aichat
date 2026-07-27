@@ -109,6 +109,33 @@
   flex: 1;
   min-width: 0;
 }
+.model-filter-wrap input {
+  padding-right: 26px;
+}
+.model-clear-btn {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  padding: 0 4px;
+  line-height: 1;
+  z-index: 5;
+  display: none;
+  opacity: 0.6;
+  transition: opacity var(--transition);
+}
+.model-clear-btn.visible {
+  display: block;
+}
+.model-clear-btn:hover {
+  opacity: 1;
+  color: var(--color-text);
+}
 .model-dropdown {
   position: absolute;
   top: calc(100% + 4px);
@@ -622,10 +649,26 @@ input.rs-theme-select {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes typingBounce {
-  0%, 60%, 100% { transform: translateY(0); }
-  30%           { transform: translateY(-6px); }
+@keyframes typingDot {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50%      { opacity: 1;   transform: scale(1.2); }
 }
+.typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+.typing-dots .dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  animation: typingDot 0.6s ease-in-out infinite;
+}
+.typing-dots .dot:nth-child(2) { animation-delay: 0.1s; }
+.typing-dots .dot:nth-child(3) { animation-delay: 0.2s; }
 
 /* ── Confirm Dialog ── */
 .confirm-dialog .modal {
