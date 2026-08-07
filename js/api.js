@@ -29,6 +29,13 @@ const Api = (() => {
     function attempt() {
       (async () => {
         let timeoutId = null;
+        let accumulatedContent = '';
+        let accumulatedReasoning = '';
+        // Count consumed tokens (including partial/aborted streams).
+        function recordUsage() {
+          const tokens = Math.ceil((accumulatedContent.length + accumulatedReasoning.length) / 4);
+          if (tokens > 0) Store.addUsage(tokens);
+        }
         try {
           const requestBody = {
             model,
@@ -96,8 +103,6 @@ const Api = (() => {
 
           const reader = response.body.getReader();
           const decoder = new TextDecoder();
-          let accumulatedContent = '';
-          let accumulatedReasoning = '';
           let usageData = null;
           let buffer = '';
 
@@ -158,9 +163,7 @@ const Api = (() => {
             }
           }
 
-          const combinedLength = accumulatedContent.length + accumulatedReasoning.length;
-          const tokens = Math.ceil(combinedLength / 4);
-          Store.addUsage(tokens);
+          recordUsage();
 
           onDone({
             content: accumulatedContent,
@@ -171,16 +174,21 @@ const Api = (() => {
           // Clear timeout on error as well
           if (timeoutId) clearTimeout(timeoutId);
           if (err.name === 'AbortError') {
+            recordUsage();
             onDone({ content: '', reasoning: '', usage: null }, true);
             return;
           }
-          if (retries < maxRetries) {
+          // Only retry when nothing has been streamed yet. Restarting after
+          // partial output would silently overwrite content already shown.
+          const hasPartial = accumulatedContent.length > 0 || accumulatedReasoning.length > 0;
+          if (!hasPartial && retries < maxRetries) {
             retries++;
             const delay = Math.min(1000 * Math.pow(2, retries) + Math.random() * 1000, 10000);
             await new Promise(r => setTimeout(r, delay));
             attempt();
             return;
           }
+          recordUsage();
           onError(err.message || 'Unknown error');
         }
       })();

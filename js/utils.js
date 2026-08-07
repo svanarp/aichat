@@ -62,6 +62,17 @@ const Utils = (() => {
     return String(str).replace(/[&<>"']/g, c => _escapeMap[c]);
   }
 
+  // Escape a string for use inside a CSS selector (attribute value lookup).
+  // Values are user-controlled (imported chat/message ids), so building
+  // `[data-msg-id="..."]` without escaping can throw or match the wrong node.
+  function escapeCss(value) {
+    const s = String(value);
+    if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
+      return CSS.escape(s);
+    }
+    return s.replace(/([^a-zA-Z0-9_-])/g, '\\$1');
+  }
+
   function deepClone(obj) {
     if (typeof structuredClone === 'function') {
       return structuredClone(obj);
@@ -73,7 +84,7 @@ const Utils = (() => {
     return val !== null && typeof val === 'object' && !Array.isArray(val);
   }
 
-  return { generateId, formatTime, formatFullTime, estimateTokens, truncate, debounce, escapeHtml, deepClone, isObject };
+  return { generateId, formatTime, formatFullTime, estimateTokens, truncate, debounce, escapeHtml, escapeCss, deepClone, isObject };
 })();
 
 // Explicit global (rather than relying on classic-script implicit scope sharing).

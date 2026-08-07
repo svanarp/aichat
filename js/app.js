@@ -32,6 +32,7 @@ const App = (() => {
     // Render the initial state
     const config = Store.loadConfig();
     UI.renderHeader(config.model);
+    UI.updateUsageStats();
 
     // Load chat list
     await refreshSidebar();
@@ -138,7 +139,9 @@ const App = (() => {
       if (delBtn) {
         const chatId = delBtn.dataset.chatId;
         if (!chatId) return;
-        e.stopPropagation();
+        // Stop the click from reaching the "select chat" listener on this
+        // same element (stopPropagation alone does not do that).
+        e.stopImmediatePropagation();
         UI.showConfirm('Delete this conversation?', async () => {
           const wasActive = chatId === currentChatId;
           await ChatManager.deleteChatById(chatId);
@@ -537,6 +540,7 @@ const App = (() => {
     // Handle draft auto-save on page unload
     window.addEventListener('beforeunload', () => {
       saveDraft();
+      ChatManager.persistCurrentState();
       ChatManager.stopGeneration();
     });
 

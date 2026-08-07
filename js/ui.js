@@ -182,17 +182,17 @@
     const msg = chat.messages.find(m => m.id === msgId);
     if (!msg || msg.role !== 'user') return;
 
-    const msgEl = document.querySelector(`.message[data-msg-id="${msgId}"]`);
+    const msgEl = document.querySelector(`.message[data-msg-id="${Utils.escapeCss(msgId)}"]`);
     if (!msgEl) return;
     const bubble = msgEl.querySelector('.message-bubble');
     if (!bubble) return;
 
     const originalContent = msg.content;
     bubble.innerHTML = `
-      <textarea class="message-edit-textarea" data-edit-id="${msgId}">${Utils.escapeHtml(originalContent)}</textarea>
+      <textarea class="message-edit-textarea" data-edit-id="${Utils.escapeHtml(msgId)}">${Utils.escapeHtml(originalContent)}</textarea>
       <div class="message-edit-actions">
-        <button class="btn btn-primary btn-edit-save" data-edit-id="${msgId}">Save & Resend</button>
-        <button class="btn btn-secondary btn-edit-cancel" data-edit-id="${msgId}">Cancel</button>
+        <button class="btn btn-primary btn-edit-save" data-edit-id="${Utils.escapeHtml(msgId)}">Save & Resend</button>
+        <button class="btn btn-secondary btn-edit-cancel" data-edit-id="${Utils.escapeHtml(msgId)}">Cancel</button>
       </div>
     `;
 
@@ -213,7 +213,7 @@
   }
 
   function saveEdit(msgId) {
-    const textarea = document.querySelector(`.message-edit-textarea[data-edit-id="${msgId}"]`);
+    const textarea = document.querySelector(`.message-edit-textarea[data-edit-id="${Utils.escapeCss(msgId)}"]`);
     if (!textarea) return;
     const newContent = textarea.value.trim();
     if (!newContent) return;

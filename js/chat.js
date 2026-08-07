@@ -104,6 +104,7 @@ const ChatManager = (() => {
 
     const config = Store.loadConfig();
     if (!config.endpoint || !config.model) {
+      sending = false;
       UI.showToast('Please configure an API endpoint first.', 'error');
       return;
     }
@@ -147,8 +148,8 @@ const ChatManager = (() => {
     sending = true;
 
     const msgIndex = currentChat.messages.findIndex(m => m.id === msgId);
-    if (msgIndex === -1) return;
-    if (currentChat.messages[msgIndex].role !== 'user') return;
+    if (msgIndex === -1) { sending = false; return; }
+    if (currentChat.messages[msgIndex].role !== 'user') { sending = false; return; }
 
     const snapshot = Utils.deepClone(currentChat);
 
@@ -202,6 +203,7 @@ const ChatManager = (() => {
 
     let streamStartTime = Date.now();
     let chunkCount = 0;
+    let lastPersistTime = 0;
     const activeChat = streamingChat;
 
     const streamGuard = setTimeout(() => {
@@ -231,6 +233,12 @@ const ChatManager = (() => {
         const speed = elapsed > 0 ? (chunkCount / elapsed).toFixed(1) : '0.0';
         assistantMsg.streamSpeed = speed;
         UI.updateStreamingMessage(assistantMsg.id, totalContent, totalReasoning, { tokens: chunkCount, speed });
+        // Periodic checkpoint so a page close mid-stream keeps most of the reply
+        const now = Date.now();
+        if (now - lastPersistTime > 5000) {
+          lastPersistTime = now;
+          Store.saveChat(activeChat).catch(err => console.error('[ChatManager] Failed to persist stream checkpoint:', err));
+        }
       },
       onDone: ({ content, reasoning, usage }, aborted) => {
         clearTimeout(streamGuard);
@@ -247,10 +255,24 @@ const ChatManager = (() => {
           activeChat.totalPromptTokens = (activeChat.totalPromptTokens || 0) + (usage.prompt_tokens || 0);
           activeChat.totalCompletionTokens = (activeChat.totalCompletionTokens || 0) + (usage.completion_tokens || 0);
         }
+        // Flush any last pending streamed chunk synchronously so the DOM
+        // matches before the final render runs.
+        if (assistantMsg.content || assistantMsg.reasoningContent) {
+          UI.finalizeStreamingMessage();
+        }
         Store.saveChat(activeChat).catch(err => {
           console.error('[ChatManager] Failed to save streamed response:', err);
           UI.showToast('Failed to save streamed response', 'error');
         });
+        // Enhance the finished message (code copy buttons, syntax highlighting,
+        // mermaid/chart rendering) — the fast append path skips re-enhancement.
+        if (assistantMsg.content || assistantMsg.reasoningContent) {
+          const doneEl = document.querySelector(`.message[data-msg-id="${Utils.escapeCss(assistantMsg.id)}"]`);
+          if (doneEl) {
+            requestAnimationFrame(() => UI.enhanceRenderedContent(doneEl));
+          }
+        }
+        UI.updateUsageStats();
         notify();
       },
       onError: (errMsg) => {
@@ -258,10 +280,15 @@ const ChatManager = (() => {
         sending = false;
         abortFn = null;
         streamingChat = null;
-        assistantMsg.content = `*Error: ${errMsg}*`;
+        // Preserve any content already streamed; append the error rather than
+        // discarding a partially-completed response.
+        assistantMsg.content = assistantMsg.content
+          ? assistantMsg.content + `\n\n*Error: ${errMsg}*`
+          : `*Error: ${errMsg}*`;
         Store.saveChat(activeChat).catch(err => {
           console.error('[ChatManager] Failed to save error state:', err);
         });
+        UI.updateUsageStats();
         notify();
         UI.showToast(`API error: ${errMsg}`, 'error');
       }
@@ -483,11 +510,21 @@ const ChatManager = (() => {
     notify(EVENTS.MODEL);
   }
 
+  /* ── Persist the current in-memory chat (best-effort, e.g. on unload) ── */
+  async function persistCurrentState() {
+    if (!currentChat || !currentChat.messages || currentChat.messages.length === 0) return;
+    try {
+      await Store.saveChat(currentChat);
+    } catch (err) {
+      console.error('[ChatManager] Failed to persist current state:', err);
+    }
+  }
+
     return {
     createChat, loadChat, getCurrentChat, sendMessage, editAndResend, regenerateResponse, togglePin, deleteChatById, renameCurrentChat, renameChatById, forkChat,
     stopGeneration, abortStreaming,
     deleteCurrentChat, clearMessages, updateSettings, isCurrentlyStreaming, onChange,
-    addTagToChat, removeTagFromChat, setChatModel
+    addTagToChat, removeTagFromChat, setChatModel, persistCurrentState
   };
 })();
 

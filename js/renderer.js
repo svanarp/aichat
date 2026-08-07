@@ -24,6 +24,18 @@
     });
   }
 
+  /* ── Rendered-message signature cache ──
+     The prefix-match fast path only re-uses an existing message element when
+     its rendered output is provably unchanged. Signature includes every field
+     that buildMessageHtml interpolates into the bubble, so in-place edits
+     (same id, new content) force a full rebuild instead of leaving stale DOM. */
+  const _renderedSignatures = new Map();
+  let _lastRenderedChatId = null;
+
+  function _messageSignature(msg) {
+    return (msg.role || '') + '\u0001' + (msg.content || '') + '\u0001' + (msg.reasoningContent || '');
+  }
+
   function buildMessageHtml(msg) {
     const isUser = msg.role === 'user';
     const isAssistant = msg.role === 'assistant';
@@ -65,7 +77,7 @@
     }
 
     return `
-      <div class="message ${msg.role}${isPinned ? ' pinned' : ''}" data-msg-id="${msg.id}">
+      <div class="message ${msg.role}${isPinned ? ' pinned' : ''}" data-msg-id="${Utils.escapeHtml(msg.id)}">
         <div class="message-bubble">${reasoningHtml}${renderedContent || '<span class="typing-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>'}</div>
         <div class="message-meta">
           <span class="message-role-badge">${isUser ? 'You' : 'AI'}</span>
@@ -86,9 +98,16 @@
   function renderMessages(chat) {
     const container = document.getElementById('chat-messages');
     if (!chat || !chat.messages || chat.messages.length === 0) {
+      _renderedSignatures.clear();
       renderEmpty();
       updateContextTokens(0);
       return;
+    }
+
+    // Cache signatures per chat so a switch away/back rebuilds cleanly
+    if (_lastRenderedChatId !== chat.id) {
+      _renderedSignatures.clear();
+      _lastRenderedChatId = chat.id;
     }
 
     destroyChartInstances(container);
@@ -116,7 +135,9 @@
     const common = Math.min(existingChildren.length, chat.messages.length);
     let prefixMatch = true;
     for (let i = 0; i < common; i++) {
-      if (existingChildren[i].dataset.msgId !== chat.messages[i].id) {
+      const msg = chat.messages[i];
+      if (existingChildren[i].dataset.msgId !== msg.id ||
+          _renderedSignatures.get(msg.id) !== _messageSignature(msg)) {
         prefixMatch = false;
         break;
       }
@@ -141,6 +162,11 @@
       // Full rebuild for structural changes (edit, delete, reorder)
       container.innerHTML = chat.messages.map(msg => buildMessageHtml(msg)).join('');
       enhanceRenderedContent(container);
+    }
+
+    // Record rendered signatures so in-place edits are detected next render
+    for (const msg of chat.messages) {
+      _renderedSignatures.set(msg.id, _messageSignature(msg));
     }
 
     if (wasAtBottom) {
@@ -360,7 +386,7 @@
       const safeName = Utils.escapeHtml(f.name);
       const isCollapsed = collapsedFolders.has(f.id);
       html += `
-        <div class="chat-folder${isCollapsed ? ' collapsed' : ''}" data-folder-id="${f.id}">
+        <div class="chat-folder${isCollapsed ? ' collapsed' : ''}" data-folder-id="${Utils.escapeHtml(f.id)}">
           <div class="chat-folder-header" draggable="false">
             <span class="chat-folder-toggle">▼</span>
             <span class="chat-folder-name">${safeName}</span>
@@ -404,11 +430,11 @@
     const isActive = chat.id === activeId;
     const safeTitle = Utils.escapeHtml(chat.title);
     return `
-      <div class="chat-list-item ${isActive ? 'active' : ''}" data-chat-id="${chat.id}" draggable="true" tabindex="0" role="button" aria-selected="${isActive}" aria-label="${safeTitle}">
+      <div class="chat-list-item ${isActive ? 'active' : ''}" data-chat-id="${Utils.escapeHtml(chat.id)}" draggable="true" tabindex="0" role="button" aria-selected="${isActive}" aria-label="${safeTitle}">
         <div style="flex:1;min-width:0">
           <div class="chat-title" title="${safeTitle}">${safeTitle}</div>
         </div>
-        <button class="chat-delete-btn" data-chat-id="${chat.id}" title="Delete chat" aria-label="Delete ${safeTitle}">✕</button>
+        <button class="chat-delete-btn" data-chat-id="${Utils.escapeHtml(chat.id)}" title="Delete chat" aria-label="Delete ${safeTitle}">✕</button>
         <span class="chat-date">${Utils.formatTime(chat.updatedAt)}</span>
       </div>
     `;
@@ -425,10 +451,38 @@
     }
   }
 
+  let _streamPending = null;   // latest {msgId, content, reasoning, stats}
+  let _streamRafId = null;
+
   function updateStreamingMessage(msgId, content, reasoning, stats) {
+    // Batch token updates into a single render per animation frame so long
+    // streams don't re-parse + re-sanitize the whole message on every token.
+    _streamPending = { msgId, content, reasoning, stats };
+    if (_streamRafId != null) return;
+    _streamRafId = requestAnimationFrame(() => {
+      _streamRafId = null;
+      const pending = _streamPending;
+      _streamPending = null;
+      _renderStreamingMessage(pending);
+    });
+  }
+
+  // Render any last pending chunk synchronously so the DOM matches the model
+  // before the final render/notify runs.
+  function finalizeStreamingMessage() {
+    if (_streamRafId != null) {
+      cancelAnimationFrame(_streamRafId);
+      _streamRafId = null;
+    }
+    const pending = _streamPending;
+    _streamPending = null;
+    if (pending) _renderStreamingMessage(pending);
+  }
+
+  function _renderStreamingMessage({ msgId, content, reasoning, stats }) {
     const container = document.getElementById('chat-messages');
-    const messageEl = container.querySelector(`.message[data-msg-id="${msgId}"]`);
-    if (!messageEl) return;
+    const messageEl = container.querySelector(`.message[data-msg-id="${Utils.escapeCss(msgId)}"]`);
+    if (!messageEl) return;   // chat switched away — drop the stale update
     const bubble = messageEl.querySelector('.message-bubble');
     if (!bubble) return;
 
@@ -460,6 +514,10 @@
 
     bubble.innerHTML = reasoningHtml + contentHtml;
 
+    // Keep the signature cache in sync with the DOM so the post-stream render
+    // can take the fast append path (no spurious full rebuild).
+    _renderedSignatures.set(msgId, _messageSignature({ role: 'assistant', content, reasoningContent: reasoning }));
+
     if (stats) {
       let meta = messageEl.querySelector('.streaming-stats');
       if (!meta) {
@@ -481,7 +539,7 @@
   }
 
   function togglePinInDOM(msgId) {
-    const el = document.querySelector(`.message[data-msg-id="${msgId}"]`);
+    const el = document.querySelector(`.message[data-msg-id="${Utils.escapeCss(msgId)}"]`);
     if (!el) return;
     const isPinned = el.classList.toggle('pinned');
     const btn = el.querySelector('.msg-action-btn[data-action="pin"]');
@@ -521,6 +579,16 @@
     } else {
       el.style.display = 'none';
     }
+  }
+
+  function updateUsageStats() {
+    const el = document.getElementById('usage-stats');
+    if (!el) return;
+    const usage = Store.loadUsage();
+    const tokens = usage.totalTokens || 0;
+    const requests = usage.requests || 0;
+    el.textContent = tokens > 0 ? `~${(tokens / 1000).toFixed(1)}K tok · ${requests} req` : '';
+    el.title = `Total usage: ${tokens.toLocaleString()} tokens across ${requests} requests`;
   }
 
   function setupRangeSlider(inputId, displayId) {
@@ -600,10 +668,12 @@
     renderHeader,
 
     updateStreamingMessage,
+    finalizeStreamingMessage,
     togglePinInDOM,
     scrollToBottom,
     updateScrollBottomBtn,
     updateContextTokens,
+    updateUsageStats,
     setupRangeSlider,
     renderRightSidebar,
     initScrollBottomBtn

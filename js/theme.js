@@ -71,7 +71,8 @@
     });
 
     if (modeBtn) {
-      // Mode toggle button text will be set when initRightSidebar calls renderRightSidebar
+      // Show the correct icon for the saved mode (set on load AND on toggle).
+      modeBtn.textContent = savedMode === 'dark' ? '🌙' : '☀️';
       modeBtn.addEventListener('click', () => {
         toggleMode();
         const newMode = getCurrentMode();
